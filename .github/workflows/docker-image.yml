@@ -60,5 +60,5 @@ jobs:
           push: true
           build-args: DERP_VERSION=${{ env.TAILSCALE_VERSION }}
           tags: |
-            ghcr.io/${{ github.actor }}/derper:${{ env.TAILSCALE_VERSION }}
-            ghcr.io/${{ github.actor }}/derper:latest
+            ghcr.io/${{ github.repository_owner }}/derper:${{ env.TAILSCALE_VERSION }}
+            ghcr.io/${{ github.repository_owner }}/derper:latest
