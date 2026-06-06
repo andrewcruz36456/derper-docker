@@ -5,7 +5,7 @@ RUN go install tailscale.com/cmd/derper@${DERP_VERSION}
 
 FROM alpine
 
-RUN apk add --no-cache ca-certificates && mkdir /app/certs
+RUN apk add --no-cache ca-certificates && mkdir -p /app/certs
 
 ENV DERP_DOMAIN=your-hostname.com \
     DERP_CERT_MODE=letsencrypt \
@@ -19,7 +19,7 @@ ENV DERP_DOMAIN=your-hostname.com \
 
 COPY --from=builder /go/bin/derper /app/derper
 
-CMD /app/derper \
+CMD ["/bin/sh", "-c", "/app/derper \
     --hostname=$DERP_DOMAIN \
     --certmode=$DERP_CERT_MODE \
     --certdir=$DERP_CERT_DIR \
@@ -28,4 +28,4 @@ CMD /app/derper \
     --stun-port=$DERP_STUN_PORT \
     --http-port=$DERP_HTTP_PORT \
     --verify-clients=$DERP_VERIFY_CLIENTS \
-    --verify-client-url=$DERP_VERIFY_CLIENT_URL
+    --verify-client-url=$DERP_VERIFY_CLIENT_URL"]
