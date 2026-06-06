@@ -14,6 +14,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - uses: actions/checkout@v4
@@ -34,9 +36,8 @@ jobs:
 
       - name: Check if image already exists
         run: |
-          GHCR_TOKEN=$(echo ${{ secrets.GITHUB_TOKEN }} | base64)
           HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
-            -H "Authorization: Bearer $GHCR_TOKEN" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             https://ghcr.io/v2/${{ github.repository }}/manifests/${{ env.TAILSCALE_VERSION }})
           IMAGE_EXISTS=$([ "$HTTP_CODE" -eq 200 ] && echo "true" || echo "false")
           echo "HTTP code: $HTTP_CODE, Image exists: $IMAGE_EXISTS"
