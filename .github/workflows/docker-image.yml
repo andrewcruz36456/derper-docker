@@ -9,11 +9,13 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -24,21 +26,28 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
           logout: false
 
       - name: Get latest tailscale version
         run: |
           TAILSCALE_VERSION=$(curl -s https://api.github.com/repos/tailscale/tailscale/releases/latest | jq -r '.tag_name')
+          if [[ ! "$TAILSCALE_VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Unexpected version format: $TAILSCALE_VERSION"
+            exit 1
+          fi
           echo "Latest tailscale version: $TAILSCALE_VERSION"
           echo "TAILSCALE_VERSION=$TAILSCALE_VERSION" >> $GITHUB_ENV
 
       - name: Check if image already exists
+        env:
+          REPO: ${{ github.repository }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            https://ghcr.io/v2/${{ github.repository }}/manifests/${{ env.TAILSCALE_VERSION }})
+            -H "Authorization: Bearer $TOKEN" \
+            "https://ghcr.io/v2/${REPO}/manifests/${TAILSCALE_VERSION}")
           IMAGE_EXISTS=$([ "$HTTP_CODE" -eq 200 ] && echo "true" || echo "false")
           echo "HTTP code: $HTTP_CODE, Image exists: $IMAGE_EXISTS"
           echo "IMAGE_EXISTS=$IMAGE_EXISTS" >> $GITHUB_ENV
