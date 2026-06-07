@@ -19,7 +19,7 @@ docker run -e DERP_DOMAIN=derp.example.com \
 | -------------------------------- | ----------------- | -------------------------------------------------------- |
 | `DERP_DOMAIN`                    | your-hostname.com | **Required.** Your DERP server hostname                  |
 | `DERP_CERT_MODE`                 | letsencrypt       | Certificate mode: `letsencrypt` or `manual`              |
-| `DERP_CERT_DIR`                  | /app/certs        | Certificate directory (manual mode)                      |
+| `DERP_CERT_DIR`                  | /app/certs        | Certificate directory                                    |
 | `DERP_ADDR`                      | :443              | HTTPS listen address                                     |
 | `DERP_HTTP_PORT`                 | 80                | HTTP port. Set to `-1` to disable                        |
 | `DERP_STUN`                      | true              | Enable STUN server                                       |
