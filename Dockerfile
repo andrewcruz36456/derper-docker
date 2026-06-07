@@ -35,6 +35,6 @@ COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-    CMD wget -qO- "http://localhost:${DERP_HTTP_PORT}/derp/probe" >/dev/null 2>&1 || exit 1
+    CMD nc -z -w3 localhost 443 || exit 1
 
 ENTRYPOINT ["/entrypoint.sh"]
