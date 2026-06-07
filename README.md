@@ -1,4 +1,4 @@
-# derper
+# Derper
 
 Minimal Docker image for [Tailscale DERP](https://tailscale.com/kb/1118/custom-derp-servers/) relay servers.  
 Tailscale version is auto-synced with [Headscale](https://github.com/juanfont/headscale) for guaranteed compatibility.
