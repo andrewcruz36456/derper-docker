@@ -15,7 +15,8 @@ ENV DERP_DOMAIN=your-hostname.com \
     DERP_STUN_PORT=3478 \
     DERP_HTTP_PORT=80 \
     DERP_VERIFY_CLIENTS=false \
-    DERP_VERIFY_CLIENT_URL=""
+    DERP_VERIFY_CLIENT_URL="" \
+    DERP_VERIFY_CLIENT_URL_FAIL_OPEN=true
 
 COPY --from=builder /go/bin/derper /app/derper
 COPY entrypoint.sh /entrypoint.sh
