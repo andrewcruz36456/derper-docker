@@ -1,11 +1,22 @@
-FROM golang:alpine AS builder
+FROM --platform=$BUILDPLATFORM golang:alpine AS builder
 
+ARG TARGETOS=linux
+ARG TARGETARCH=amd64
+ARG TARGETVARIANT
 ARG DERP_VERSION=latest
-RUN go install tailscale.com/cmd/derper@${DERP_VERSION}
+
+ENV CGO_ENABLED=0 \
+    GOOS=$TARGETOS \
+    GOARCH=$TARGETARCH
+
+RUN if [ "$TARGETARCH" = "arm" ] && [ -n "$TARGETVARIANT" ]; then \
+        export GOARM="${TARGETVARIANT#v}"; \
+    fi && \
+    go install tailscale.com/cmd/derper@${DERP_VERSION}
 
 FROM alpine
 
-RUN apk add --no-cache ca-certificates && mkdir -p /app/certs
+RUN apk add --no-cache ca-certificates tzdata wget && mkdir -p /app/certs
 
 ENV DERP_DOMAIN=your-hostname.com \
     DERP_CERT_MODE=letsencrypt \
@@ -16,10 +27,14 @@ ENV DERP_DOMAIN=your-hostname.com \
     DERP_HTTP_PORT=80 \
     DERP_VERIFY_CLIENTS=false \
     DERP_VERIFY_CLIENT_URL="" \
-    DERP_VERIFY_CLIENT_URL_FAIL_OPEN=true
+    DERP_VERIFY_CLIENT_URL_FAIL_OPEN=true \
+    TZ=UTC
 
 COPY --from=builder /go/bin/derper /app/derper
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD wget -qO- "http://localhost:${DERP_HTTP_PORT}/derp/probe" >/dev/null 2>&1 || exit 1
 
 ENTRYPOINT ["/entrypoint.sh"]
