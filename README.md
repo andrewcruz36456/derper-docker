@@ -5,7 +5,7 @@
 > required: set env `DERP_DOMAIN` to your domain
 
 ```bash
-docker run -e DERP_DOMAIN=derper.your-domain.com -p 80:80 -p 443:443 -p 3478:3478/udp ghcr.io/kaaanata/derper
+docker run -e DERP_DOMAIN=derper.your-domain.com -p 80:80 -p 443:443 -p 3478:3478/udp ghcr.io/andrewcruz36456/derper
 ```
 
 | env                    | required | description                                                                 | default value     |
@@ -18,7 +18,8 @@ docker run -e DERP_DOMAIN=derper.your-domain.com -p 80:80 -p 443:443 -p 3478:347
 | DERP_STUN_PORT         | false    | The UDP port on which to serve STUN.                                        | 3478              |
 | DERP_HTTP_PORT         | false    | The port on which to serve HTTP. Set to -1 to disable                       | 80                |
 | DERP_VERIFY_CLIENTS    | false    | verify clients to this DERP server through a local tailscaled instance      | false             |
-| DERP_VERIFY_CLIENT_URL | false    | if non-empty, an admission controller URL for permitting client connections | ""                |
+| DERP_VERIFY_CLIENT_URL           | false    | if non-empty, an admission controller URL for permitting client connections        | ""    |
+| DERP_VERIFY_CLIENT_URL_FAIL_OPEN | false    | if true, allow clients when the admission controller URL is unreachable            | true  |
 
 # Usage
 
